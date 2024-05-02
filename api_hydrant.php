@@ -17,7 +17,7 @@
             $lokasi = $_POST['lokasi'];
             $jenis = $_POST['jenis'];
         }
-        if($jenis != "ihb" || $jenis != "ohb") $jenis = "ihb";
+        if($jenis != "ihb" && $jenis != "ohb") $jenis = "ihb";
         //2024-03-31 00:00:00 
         $sql = "INSERT INTO `hydrant` (`id`, `nomor`, `lokasi`, `jenis_hydrant`, `timestamp`) VALUES (NULL, '".$nomor."', '".$lokasi."', '".$jenis."', current_timestamp());";
         $result = mysqli_query($conn, $sql);
@@ -38,18 +38,97 @@
         }
     }
     
-    if(isset($_GET['read']) || isset($_POST['read'])){
-        $datas;
-        $result = mysqli_query($conn, "SELECT * FROM hydrant");
-        $arr = 0;
-        while($data = mysqli_fetch_object($result)){
-            $datas[$arr++] = $data;
+    if(isset($_GET['search']) || isset($_POST['search'])){
+        $id = null;
+        $nomor = null;
+        $jenis = null;
+        if(isset($_GET['search'])){
+            if(isset($_GET['id'])) $id = $_GET['id'];
+            if(isset($_GET['nomor'])) $nomor = $_GET['nomor'];
+            if(isset($_GET['jenis'])) $jenis = $_GET['jenis'];
         }
-        echo json_encode([
-            "status" => "success",
-            "pesan" => "Read all data Hydrant Success",
-            "data" => $datas,
-        ]);
+        else if(isset($_POST['search'])){
+            if(isset($_POST['id'])) $id = $_POST['id'];
+            if(isset($_POST['nomor'])) $nomor = $_POST['nomor'];
+            if(isset($_POST['jenis'])) $jenis = $_POST['jenis'];
+        }
+        if($jenis == null)$jenis = "ihb";
+        if($id != null && $nomor == null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `hydrant` WHERE jenis_hydrant = '$jenis' AND id = ".$id));
+        else if($id == null && $nomor != null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `hydrant` WHERE jenis_hydrant = '$jenis' AND nomor = '$nomor'"));
+        else if($id != null && $nomor != null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `hydrant` WHERE jenis_hydrant = '$jenis' AND id = $id AND nomor = '$nomor'"));
+        else if($id == null && $nomor == null){
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Search data Failed!, Required id or nomor",
+            ]);die;
+        }
+        if($data){ 
+            $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_$jenis WHERE hydrant_id = $data->id AND created_at > '".date("Y-m")."-01 00:00:00' AND created_at < '".date("Y-m")."-31 23:59:59'"));
+            if($data2){
+                $user = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data2->user_id"));
+                http_response_code(200);
+                echo json_encode([
+                    "status" => "success",
+                    "inspection" => false,
+                    "pesan" => "Search data Successed!",
+                    "data_inspeksi" => $data2,
+                    "data_hydrant" => $data,
+                    "data_user" => $user,
+                ]);die;
+            }
+            else{
+                http_response_code(200);
+                echo json_encode([
+                    "status" => "success",
+                    "inspection" => true,
+                    "pesan" => "Search data Successed!",
+                    "data" => $data,
+                ]);die;
+            }
+        }
+        else{            
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Search data Failed!, data not found"
+            ]);die;
+        }
+
+    }
+
+    if(isset($_GET['read']) || isset($_POST['read'])){
+        $datas = [];
+        $result;
+        $jenis = null;
+        if (isset($_GET['jenis']) || isset($_POST['jenis'])){
+            if(isset($_GET['jenis'])) $jenis = $_GET['jenis'];
+            if(isset($_POST['jenis'])) $jenis = $_POST['jenis'];
+            if($jenis == 'ihb' || $jenis == 'ohb') $result = mysqli_query($conn, "SELECT * FROM hydrant WHERE jenis_hydrant = '".$jenis."'");
+            else $result = mysqli_query($conn, "SELECT * FROM hydrant");
+        }
+        else{
+            $result = mysqli_query($conn, "SELECT * FROM hydrant");
+        }
+        if($result){
+            http_response_code(200);
+            $arr = 0;
+            while($data = mysqli_fetch_object($result)){
+                $datas[$arr++] = $data;
+            }
+            $pesan = "Read all data Hydrant Success";
+            if($jenis == 'ihb') $pesan = "Read all data Hydrant IHB Success";
+            if($jenis == 'ohb') $pesan = "Read all data Hydrant OHB Success";
+            echo json_encode([
+                "status" => "success",
+                "pesan" => $pesan,
+                "data" => $datas,
+            ]);
+        }
+        else{
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Read all data Apar Failed!"
+            ]);
+        }
     }
     if(isset($_GET['update']) || isset($_POST['update'])){
         $id = null;

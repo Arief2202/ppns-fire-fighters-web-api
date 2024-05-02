@@ -38,17 +38,78 @@
     }
     
     if(isset($_GET['read']) || isset($_POST['read'])){
-        $datas;
+        $datas=[];
         $result = mysqli_query($conn, "SELECT * FROM apar");
-        $arr = 0;
-        while($data = mysqli_fetch_object($result)){
-            $datas[$arr++] = $data;
+        if($result){
+            http_response_code(200);
+            $arr = 0;
+            while($data = mysqli_fetch_object($result)){
+                $datas[$arr++] = $data;
+            }
+            echo json_encode([
+                "status" => "success",
+                "pesan" => "Read all data Apar Success",
+                "data" => $datas,
+            ]);
         }
-        echo json_encode([
-            "status" => "success",
-            "pesan" => "Read all data Apar Success",
-            "data" => $datas,
-        ]);
+        else{
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Read all data Apar Failed!"
+            ]);
+        }
+    }
+    if(isset($_GET['search']) || isset($_POST['search'])){
+        $id = null;
+        $nomor = null;
+        if(isset($_GET['search'])){
+            if(isset($_GET['id'])) $id = $_GET['id'];
+            if(isset($_GET['nomor'])) $nomor = $_GET['nomor'];
+        }
+        else if(isset($_POST['search'])){
+            if(isset($_POST['id'])) $id = $_POST['id'];
+            if(isset($_POST['nomor'])) $nomor = $_POST['nomor'];
+        }
+        if($id != null && $nomor == null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `apar` WHERE id = ".$id));
+        else if($id == null && $nomor != null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `apar` WHERE nomor = '$nomor'"));
+        else if($id != null && $nomor != null) $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `apar` WHERE id = $id AND nomor = '$nomor'"));
+        else if($id == null && $nomor == null){
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Search data Failed!, Required id or nomor",
+            ]);die;
+        }
+        if($data){ 
+            $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE apar_id = $data->id AND created_at > '".date("Y-m")."-01 00:00:00' AND created_at < '".date("Y-m")."-31 23:59:59'"));
+            if($data2){
+                $user = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data2->user_id"));
+                http_response_code(200);
+                echo json_encode([
+                    "status" => "success",
+                    "inspection" => false,
+                    "pesan" => "Search data Successed!",
+                    "data_inspeksi" => $data2,
+                    "data_apar" => $data,
+                    "data_user" => $user,
+                ]);die;
+            }
+            else{
+                http_response_code(200);
+                echo json_encode([
+                    "status" => "success",
+                    "inspection" => true,
+                    "pesan" => "Search data Successed!",
+                    "data" => $data,
+                ]);die;
+            }
+        }
+        else{            
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "Search data Failed!, data not found"
+            ]);die;
+        }
+
     }
     if(isset($_GET['update']) || isset($_POST['update'])){
         $id = null;

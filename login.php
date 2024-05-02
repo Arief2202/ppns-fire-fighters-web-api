@@ -23,6 +23,12 @@
                 ]);
             }
         }
+        else{
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "invalid username or password!"
+            ]);
+        }
     }
     else if((isset($_GET['username']) || isset($_GET['email'])) && isset($_GET['password'])){
         if(isset($_GET['username'])) $email = $_GET['username'];
@@ -44,6 +50,12 @@
                     "pesan" => "invalid username or password!"
                 ]);
             }
+        }
+        else{
+            echo json_encode([
+                "status" => "failed",
+                "pesan" => "invalid username or password!"
+            ]);
         }
     }
     else{

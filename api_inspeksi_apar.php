@@ -4,125 +4,107 @@
     http_response_code(406);
 
     if(isset($_GET['create']) || isset($_POST['create'])){
-        $nomor;
-        $lokasi;
-        $jenis;
+        $user_id;
+        $apar_id;
+        $kondisi_tabung;
+        $segel_pin;
+        $tuas_pegangan;
+        $label_segitiga;
+        $label_instruksi;
+        $kondisi_selang;
+        $tekanan_tabung;
+        $posisi;
+
         if(isset($_GET['create'])){
-            $nomor = $_GET['nomor'];
-            $lokasi = $_GET['lokasi'];
-            $jenis = $_GET['jenis'];
+            $user_id = $_GET['user_id'];
+            $apar_id = $_GET['apar_id'];
+            $kondisi_tabung = $_GET['kondisi_tabung'];
+            $segel_pin = $_GET['segel_pin'];
+            $tuas_pegangan = $_GET['tuas_pegangan'];
+            $label_segitiga = $_GET['label_segitiga'];
+            $label_instruksi = $_GET['label_instruksi'];
+            $kondisi_selang = $_GET['kondisi_selang'];
+            $tekanan_tabung = $_GET['tekanan_tabung'];
+            $posisi = $_GET['posisi'];
         }
         else if(isset($_POST['create'])){
-            $nomor = $_POST['nomor'];
-            $lokasi = $_POST['lokasi'];
-            $jenis = $_POST['jenis'];
+            $user_id = $_POST['user_id'];
+            $apar_id = $_POST['apar_id'];
+            $kondisi_tabung = $_POST['kondisi_tabung'];
+            $segel_pin = $_POST['segel_pin'];
+            $tuas_pegangan = $_POST['tuas_pegangan'];
+            $label_segitiga = $_POST['label_segitiga'];
+            $label_instruksi = $_POST['label_instruksi'];
+            $kondisi_selang = $_POST['kondisi_selang'];
+            $tekanan_tabung = $_POST['tekanan_tabung'];
+            $posisi = $_POST['posisi'];
         }
-        if($jenis != "ihb" || $jenis != "ohb") $jenis = "ihb";
-        //2024-03-31 00:00:00 
-        $sql = "INSERT INTO `hydrant` (`id`, `nomor`, `lokasi`, `jenis_hydrant`, `timestamp`) VALUES (NULL, '".$nomor."', '".$lokasi."', '".$jenis."', current_timestamp());";
+        $sql = "INSERT INTO `inspeksi_apar` (`id`, `user_id`, `apar_id`, `kondisi_tabung`, `segel_pin`, `tuas_pegangan`, `label_segitiga`, `label_instruksi`, `kondisi_selang`, `tekanan_tabung`, `posisi`, `created_at`) VALUES (NULL, '$user_id', '$apar_id', '$kondisi_tabung', '$segel_pin', '$tuas_pegangan', '$label_segitiga', '$label_instruksi', '$kondisi_selang', '$tekanan_tabung', '$posisi', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
-            $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE nomor = '".$nomor."'"));
+            // $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE nomor = '".$nomor."'"));
             echo json_encode([
                 "status" => "success",
-                "data" => $data,
-                "pesan" => "Data Hydrant Berhasil Ditambahkan",
+                // "data" => $data,
+                "pesan" => "Data Inspeksi Apar Berhasil Ditambahkan",
             ]);
         }
         else{
             echo json_encode([
                 "status" => "failed",
-                "pesan" => "Data Hydrant Gagal Ditambahkan",
+                "pesan" => "Data Inspeksi Apar Gagal Ditambahkan",
             ]);
         }
     }
     
     if(isset($_GET['read']) || isset($_POST['read'])){
-        $datas;
-        $result = mysqli_query($conn, "SELECT * FROM hydrant");
+        $datas = [];
+        $result = null;
+        $start_date = null;
+        $end_date = null;
+        $inspeksi = null;
+        if(isset($_GET['read'])){
+            if(isset($_GET['start_date'])) $start_date = $_GET['start_date'];
+            if(isset($_GET['end_date'])) $end_date = $_GET['end_date'];
+            if(isset($_GET['inspeksi'])) $inspeksi = $_GET['inspeksi'];
+        }
+        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE created_at > '$start_date' AND created_at < '$end_date'");
+        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar");
         $arr = 0;
-        while($data = mysqli_fetch_object($result)){
-            $datas[$arr++] = $data;
-        }
-        echo json_encode([
-            "status" => "success",
-            "pesan" => "Read all data Hydrant Success",
-            "data" => $datas,
-        ]);
-    }
-    if(isset($_GET['update']) || isset($_POST['update'])){
-        $id = null;
-        $nomor = null;
-        $lokasi = null;
-        $jenis = null;
-        if(isset($_GET['update'])){
-            if(isset($_GET['id'])) $id = $_GET['id'];
-            if(isset($_GET['nomor'])) $nomor = $_GET['nomor'];
-            if(isset($_GET['lokasi'])) $lokasi = $_GET['lokasi'];
-            if(isset($_GET['jenis'])) $jenis = $_GET['jenis'];
-        }
-        else if(isset($_POST['update'])){
-            if(isset($_POST['id'])) $id = $_POST['id'];
-            if(isset($_POST['nomor'])) $nomor = $_POST['nomor'];
-            if(isset($_POST['lokasi'])) $lokasi = $_POST['lokasi'];
-            if(isset($_POST['jenis'])) $jenis = $_POST['jenis'];
-        }
-        if($jenis != "ihb" && $jenis != "ohb" && $jenis != null) $jenis = "ihb";
-        $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `hydrant` WHERE id = ".$id));
-        if($data){
-            if($nomor != null) $data->nomor = $nomor;
-            if($lokasi != null) $data->lokasi = $lokasi;
-            if($lokasi != null) $data->lokasi = $lokasi;
-            if($jenis != null) $data->jenis_hydrant = $jenis;
-            
-            //2024-03-31 00:00:00 
-            $sql = "UPDATE `hydrant` SET `nomor` = '".$data->nomor."', `lokasi` = '".$data->lokasi."', `jenis_hydrant` = '".$data->jenis_hydrant."' WHERE `hydrant`.`id` = ".$id.";";
-            $result = mysqli_query($conn, $sql);
-            if($result){
-                http_response_code(200);
-                $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = '".$id."'"));
-                echo json_encode([
-                    "status" => "success",
-                    "pesan" => "Data Hydrant Berhasil Diupdate",
-                    "data" => $data,
-                ]);
-            }
-            else{
-                echo json_encode([
-                    "status" => "failed",
-                    "pesan" => "Data Hydrant Gagal Diupdate",
-                ]);
-            }
-        }
-        else{
-            echo json_encode([
-                "status" => "failed",
-                "pesan" => "Data Hydrant Gagal Diupdate, ID tidak ditemukan!",
-            ]);
-        }
-    }
-
-    if(isset($_GET['delete']) || isset($_POST['delete'])){
-        $id;
-        if(isset($_GET['delete'])){
-            $id = $_GET['id'];
-        }
-        else if(isset($_POST['delete'])){
-            $id = $_GET['id'];
-        }
-        $result = mysqli_query($conn, "DELETE FROM `hydrant` WHERE `hydrant`.`id` = ".$id);
         if($result){
             http_response_code(200);
+            if($inspeksi == 'belum'){
+                $allApar = mysqli_query($conn, "SELECT * FROM apar");
+                while($data = mysqli_fetch_object($allApar)){
+                    $ada = false;
+                    while($data2 = mysqli_fetch_object($result)){
+                        if($data2->apar_id == $data->id) $ada = true;
+                    }
+                    if($ada == false){
+                        $datas[$arr++] = $data;
+                    }   
+                }
+            }
+            else{
+                while($data = mysqli_fetch_object($result)){
+                        $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id"));
+                        $data->user = $resultUser;
+                        $data->apar = $resultApar;
+                        $datas[$arr++] = $data;
+                }
+            }
             echo json_encode([
                 "status" => "success",
-                "pesan" => "Delete Hydrant Berhasil",
+                "pesan" => "Read data inspeksi Success",
+                "data" => $datas,
             ]);
         }
         else{
             echo json_encode([
                 "status" => "failed",
-                "pesan" => "Delete Hydrant Gagal",
+                "pesan" => "Read data inspeksi Failed",
             ]);
         }
     }
