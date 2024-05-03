@@ -4,20 +4,24 @@
     http_response_code(406);
 
     if(isset($_GET['create']) || isset($_POST['create'])){
-        $user_id;
-        $apar_id;
-        $kondisi_tabung;
-        $segel_pin;
-        $tuas_pegangan;
-        $label_segitiga;
-        $label_instruksi;
-        $kondisi_selang;
-        $tekanan_tabung;
-        $posisi;
+        $user_id = null;
+        $apar_id = null;
+        $tersedia = null;
+        $alasan = null;
+        $kondisi_tabung = null;
+        $segel_pin = null;
+        $tuas_pegangan = null;
+        $label_segitiga = null;
+        $label_instruksi = null;
+        $kondisi_selang = null;
+        $tekanan_tabung = null;
+        $posisi = null;
 
         if(isset($_GET['create'])){
             $user_id = $_GET['user_id'];
             $apar_id = $_GET['apar_id'];
+            $tersedia = $_GET['tersedia'];
+            $alasan = $_GET['alasan'];
             $kondisi_tabung = $_GET['kondisi_tabung'];
             $segel_pin = $_GET['segel_pin'];
             $tuas_pegangan = $_GET['tuas_pegangan'];
@@ -30,6 +34,8 @@
         else if(isset($_POST['create'])){
             $user_id = $_POST['user_id'];
             $apar_id = $_POST['apar_id'];
+            $tersedia = $_POST['tersedia'];
+            $alasan = $_POST['alasan'];
             $kondisi_tabung = $_POST['kondisi_tabung'];
             $segel_pin = $_POST['segel_pin'];
             $tuas_pegangan = $_POST['tuas_pegangan'];
@@ -39,7 +45,7 @@
             $tekanan_tabung = $_POST['tekanan_tabung'];
             $posisi = $_POST['posisi'];
         }
-        $sql = "INSERT INTO `inspeksi_apar` (`id`, `user_id`, `apar_id`, `kondisi_tabung`, `segel_pin`, `tuas_pegangan`, `label_segitiga`, `label_instruksi`, `kondisi_selang`, `tekanan_tabung`, `posisi`, `created_at`) VALUES (NULL, '$user_id', '$apar_id', '$kondisi_tabung', '$segel_pin', '$tuas_pegangan', '$label_segitiga', '$label_instruksi', '$kondisi_selang', '$tekanan_tabung', '$posisi', current_timestamp());";
+        $sql = "INSERT INTO `inspeksi_apar` (`id`, `user_id`, `apar_id`, `tersedia`, `alasan`, `kondisi_tabung`, `segel_pin`, `tuas_pegangan`, `label_segitiga`, `label_instruksi`, `kondisi_selang`, `tekanan_tabung`, `posisi`, `created_at`) VALUES (NULL, '$user_id', '$apar_id', '$tersedia', '$alasan', '$kondisi_tabung', '$segel_pin', '$tuas_pegangan', '$label_segitiga', '$label_instruksi', '$kondisi_selang', '$tekanan_tabung', '$posisi', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
@@ -77,13 +83,8 @@
             if($inspeksi == 'belum'){
                 $allApar = mysqli_query($conn, "SELECT * FROM apar");
                 while($data = mysqli_fetch_object($allApar)){
-                    $ada = false;
-                    while($data2 = mysqli_fetch_object($result)){
-                        if($data2->apar_id == $data->id) $ada = true;
-                    }
-                    if($ada == false){
-                        $datas[$arr++] = $data;
-                    }   
+                    $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE apar_id = $data->id AND created_at > '$start_date' AND created_at < '$end_date'"));
+                    if($data2 == null) $datas[$arr++] = $data;
                 }
             }
             else{
@@ -99,6 +100,7 @@
                 "status" => "success",
                 "pesan" => "Read data inspeksi Success",
                 "data" => $datas,
+
             ]);
         }
         else{

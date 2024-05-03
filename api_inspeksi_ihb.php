@@ -69,29 +69,24 @@
             if(isset($_GET['end_date'])) $end_date = $_GET['end_date'];
             if(isset($_GET['inspeksi'])) $inspeksi = $_GET['inspeksi'];
         }
-        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE created_at > '$start_date' AND created_at < '$end_date'");
-        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar");
+        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ihb WHERE created_at > '$start_date' AND created_at < '$end_date'");
+        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ihb");
         $arr = 0;
         if($result){
             http_response_code(200);
             if($inspeksi == 'belum'){
-                $allApar = mysqli_query($conn, "SELECT * FROM apar");
-                while($data = mysqli_fetch_object($allApar)){
-                    $ada = false;
-                    while($data2 = mysqli_fetch_object($result)){
-                        if($data2->apar_id == $data->id) $ada = true;
-                    }
-                    if($ada == false){
-                        $datas[$arr++] = $data;
-                    }   
+                $allHydrant = mysqli_query($conn, "SELECT * FROM hydrant WHERE jenis_hydrant = 'ihb'");
+                while($data = mysqli_fetch_object($allHydrant)){
+                    $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ihb WHERE hydrant_id = $data->id AND created_at > '$start_date' AND created_at < '$end_date'"));
+                    if($data2 == null) $datas[$arr++] = $data;
                 }
             }
             else{
                 while($data = mysqli_fetch_object($result)){
                         $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
-                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id"));
+                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE id = $data->hydrant_id"));
                         $data->user = $resultUser;
-                        $data->apar = $resultApar;
+                        $data->hydrant = $resultApar;
                         $datas[$arr++] = $data;
                 }
             }
@@ -99,6 +94,7 @@
                 "status" => "success",
                 "pesan" => "Read data inspeksi Success",
                 "data" => $datas,
+
             ]);
         }
         else{

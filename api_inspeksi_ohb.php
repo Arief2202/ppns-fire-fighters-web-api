@@ -5,41 +5,50 @@
 
     if(isset($_GET['create']) || isset($_POST['create'])){
         $user_id;
-        $apar_id;
-        $kondisi_tabung;
-        $segel_pin;
-        $tuas_pegangan;
-        $label_segitiga;
-        $label_instruksi;
+        $hydrant_id;
+        $kondisi_kotak;
+        $posisi_kotak;
+        $kondisi_nozzle;
         $kondisi_selang;
-        $tekanan_tabung;
-        $posisi;
+        $jenis_selang;
+        $kondisi_coupling;
+        $tuas_pembuka;
+        $kondisi_outlet;
+        $penutup_cop;
+        $flushing_hydrant;
+        $tekanan_hydrant;
 
         if(isset($_GET['create'])){
             $user_id = $_GET['user_id'];
-            $apar_id = $_GET['apar_id'];
-            $kondisi_tabung = $_GET['kondisi_tabung'];
-            $segel_pin = $_GET['segel_pin'];
-            $tuas_pegangan = $_GET['tuas_pegangan'];
-            $label_segitiga = $_GET['label_segitiga'];
-            $label_instruksi = $_GET['label_instruksi'];
+            $hydrant_id = $_GET['hydrant_id'];
+            $kondisi_kotak = $_GET['kondisi_kotak'];
+            $posisi_kotak = $_GET['posisi_kotak'];
+            $kondisi_nozzle = $_GET['kondisi_nozzle'];
             $kondisi_selang = $_GET['kondisi_selang'];
-            $tekanan_tabung = $_GET['tekanan_tabung'];
-            $posisi = $_GET['posisi'];
+            $jenis_selang = $_GET['jenis_selang'];
+            $kondisi_coupling = $_GET['kondisi_coupling'];
+            $tuas_pembuka = $_GET['tuas_pembuka'];
+            $kondisi_outlet = $_GET['kondisi_outlet'];
+            $penutup_cop = $_GET['penutup_cop'];
+            $flushing_hydrant = $_GET['flushing_hydrant'];
+            $tekanan_hydrant = $_GET['tekanan_hydrant'];
         }
         else if(isset($_POST['create'])){
             $user_id = $_POST['user_id'];
-            $apar_id = $_POST['apar_id'];
-            $kondisi_tabung = $_POST['kondisi_tabung'];
-            $segel_pin = $_POST['segel_pin'];
-            $tuas_pegangan = $_POST['tuas_pegangan'];
-            $label_segitiga = $_POST['label_segitiga'];
-            $label_instruksi = $_POST['label_instruksi'];
+            $hydrant_id = $_POST['hydrant_id'];
+            $kondisi_kotak = $_POST['kondisi_kotak'];
+            $posisi_kotak = $_POST['posisi_kotak'];
+            $kondisi_nozzle = $_POST['kondisi_nozzle'];
             $kondisi_selang = $_POST['kondisi_selang'];
-            $tekanan_tabung = $_POST['tekanan_tabung'];
-            $posisi = $_POST['posisi'];
+            $jenis_selang = $_POST['jenis_selang'];
+            $kondisi_coupling = $_POST['kondisi_coupling'];
+            $tuas_pembuka = $_POST['tuas_pembuka'];
+            $kondisi_outlet = $_POST['kondisi_outlet'];
+            $penutup_cop = $_POST['penutup_cop'];
+            $flushing_hydrant = $_POST['flushing_hydrant'];
+            $tekanan_hydrant = $_POST['tekanan_hydrant'];
         }
-        $sql = "INSERT INTO `inspeksi_apar` (`id`, `user_id`, `apar_id`, `kondisi_tabung`, `segel_pin`, `tuas_pegangan`, `label_segitiga`, `label_instruksi`, `kondisi_selang`, `tekanan_tabung`, `posisi`, `created_at`) VALUES (NULL, '$user_id', '$apar_id', '$kondisi_tabung', '$segel_pin', '$tuas_pegangan', '$label_segitiga', '$label_instruksi', '$kondisi_selang', '$tekanan_tabung', '$posisi', current_timestamp());";
+        $sql = "INSERT INTO `inspeksi_hydrant_ohb` (`id`, `user_id`, `hydrant_id`, `kondisi_kotak`, `posisi_kotak`, `kondisi_nozzle`, `kondisi_selang`, `jenis_selang`, `kondisi_coupling`, `tuas_pembuka`, `kondisi_outlet`, `penutup_cop`, `flushing_hydrant`, `tekanan_hydrant`,  `created_at`) VALUES (NULL, '$user_id', '$hydrant_id', '$kondisi_kotak', '$posisi_kotak', '$kondisi_nozzle', '$kondisi_selang', '$jenis_selang', '$kondisi_coupling', '$tuas_pembuka', '$kondisi_outlet', '$penutup_cop', '$flushing_hydrant', '$tekanan_hydrant', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
@@ -47,13 +56,13 @@
             echo json_encode([
                 "status" => "success",
                 // "data" => $data,
-                "pesan" => "Data Inspeksi Apar Berhasil Ditambahkan",
+                "pesan" => "Data Inspeksi Hydrant OHB Berhasil Ditambahkan",
             ]);
         }
         else{
             echo json_encode([
                 "status" => "failed",
-                "pesan" => "Data Inspeksi Apar Gagal Ditambahkan",
+                "pesan" => "Data Inspeksi Hydrant OHB Gagal Ditambahkan",
             ]);
         }
     }
@@ -69,29 +78,24 @@
             if(isset($_GET['end_date'])) $end_date = $_GET['end_date'];
             if(isset($_GET['inspeksi'])) $inspeksi = $_GET['inspeksi'];
         }
-        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE created_at > '$start_date' AND created_at < '$end_date'");
-        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar");
+        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ohb WHERE created_at > '$start_date' AND created_at < '$end_date'");
+        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ohb");
         $arr = 0;
         if($result){
             http_response_code(200);
             if($inspeksi == 'belum'){
-                $allApar = mysqli_query($conn, "SELECT * FROM apar");
-                while($data = mysqli_fetch_object($allApar)){
-                    $ada = false;
-                    while($data2 = mysqli_fetch_object($result)){
-                        if($data2->apar_id == $data->id) $ada = true;
-                    }
-                    if($ada == false){
-                        $datas[$arr++] = $data;
-                    }   
+                $allHydrant = mysqli_query($conn, "SELECT * FROM hydrant WHERE jenis_hydrant = 'ohb'");
+                while($data = mysqli_fetch_object($allHydrant)){
+                    $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ohb WHERE hydrant_id = $data->id AND created_at > '$start_date' AND created_at < '$end_date'"));
+                    if($data2 == null) $datas[$arr++] = $data;
                 }
             }
             else{
                 while($data = mysqli_fetch_object($result)){
                         $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
-                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id"));
+                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE id = $data->hydrant_id"));
                         $data->user = $resultUser;
-                        $data->apar = $resultApar;
+                        $data->hydrant = $resultApar;
                         $datas[$arr++] = $data;
                 }
             }
@@ -99,6 +103,7 @@
                 "status" => "success",
                 "pesan" => "Read data inspeksi Success",
                 "data" => $datas,
+
             ]);
         }
         else{
