@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 11, 2024 at 04:20 PM
+-- Generation Time: May 03, 2024 at 11:27 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -20,6 +20,103 @@ SET time_zone = "+00:00";
 --
 -- Database: `ppns_fire_fighters`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `apar`
+--
+
+CREATE TABLE `apar` (
+  `id` int(255) NOT NULL,
+  `nomor` varchar(255) NOT NULL,
+  `lokasi` varchar(255) NOT NULL,
+  `tanggal_kadaluarsa` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `hydrant`
+--
+
+CREATE TABLE `hydrant` (
+  `id` int(255) NOT NULL,
+  `nomor` varchar(255) NOT NULL,
+  `lokasi` varchar(255) NOT NULL,
+  `jenis_hydrant` varchar(5) NOT NULL DEFAULT 'ihb',
+  `tanggal_kadaluarsa` datetime NOT NULL DEFAULT current_timestamp(),
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inspeksi_apar`
+--
+
+CREATE TABLE `inspeksi_apar` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `apar_id` int(255) NOT NULL,
+  `tersedia` varchar(255) NOT NULL,
+  `alasan` varchar(255) NOT NULL,
+  `kondisi_tabung` varchar(255) NOT NULL,
+  `segel_pin` varchar(255) NOT NULL,
+  `tuas_pegangan` varchar(255) NOT NULL,
+  `label_segitiga` varchar(255) NOT NULL,
+  `label_instruksi` varchar(255) NOT NULL,
+  `kondisi_selang` varchar(255) NOT NULL,
+  `tekanan_tabung` varchar(255) NOT NULL,
+  `posisi` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inspeksi_hydrant_ihb`
+--
+
+CREATE TABLE `inspeksi_hydrant_ihb` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `hydrant_id` int(255) NOT NULL,
+  `kondisi_kotak` varchar(255) NOT NULL,
+  `posisi_kotak` varchar(255) NOT NULL,
+  `kondisi_nozzle` varchar(255) NOT NULL,
+  `kondisi_selang` varchar(255) NOT NULL,
+  `jenis_selang` varchar(255) NOT NULL,
+  `kondisi_coupling` varchar(255) NOT NULL,
+  `kondisi_landing_valve` varchar(255) NOT NULL,
+  `kondisi_tray` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `inspeksi_hydrant_ohb`
+--
+
+CREATE TABLE `inspeksi_hydrant_ohb` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `hydrant_id` int(255) NOT NULL,
+  `kondisi_kotak` varchar(255) NOT NULL,
+  `posisi_kotak` varchar(255) NOT NULL,
+  `kondisi_nozzle` varchar(255) NOT NULL,
+  `kondisi_selang` varchar(255) NOT NULL,
+  `jenis_selang` varchar(255) NOT NULL,
+  `kondisi_coupling` varchar(255) NOT NULL,
+  `tuas_pembuka` varchar(255) NOT NULL,
+  `kondisi_outlet` varchar(255) NOT NULL,
+  `penutup_cop` varchar(255) NOT NULL,
+  `flushing_hydrant` varchar(255) NOT NULL,
+  `tekanan_hydrant` varchar(255) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 -- --------------------------------------------------------
 
@@ -41,13 +138,41 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `role`, `name`, `email`, `password`, `created_at`) VALUES
-(1, 1, 'admin', 'admin', '$2y$10$hysNWq1hUoO1UDQVclu0s.0cuCUWepq8xrq9/HgL.WleCd5JkfFvu', '2024-02-11 07:57:43'),
-(2, 0, 'Arief', 'arief', '$2y$10$w/a0/NqesB4FQUGmEfjGs.Jv9uN0bENTPGnOk3Qb/ns/lcNOOWNAa', '2024-02-11 12:08:51'),
-(3, 0, 'Lisya', 'lisya', '$2y$10$w/a0/NqesB4FQUGmEfjGs.Jv9uN0bENTPGnOk3Qb/ns/lcNOOWNAa', '2024-02-11 12:08:51');
+(1, 1, 'admin', 'admin', '$2y$10$hysNWq1hUoO1UDQVclu0s.0cuCUWepq8xrq9/HgL.WleCd5JkfFvu', '2024-05-03 09:27:34');
 
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `apar`
+--
+ALTER TABLE `apar`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `hydrant`
+--
+ALTER TABLE `hydrant`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inspeksi_apar`
+--
+ALTER TABLE `inspeksi_apar`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inspeksi_hydrant_ihb`
+--
+ALTER TABLE `inspeksi_hydrant_ihb`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `inspeksi_hydrant_ohb`
+--
+ALTER TABLE `inspeksi_hydrant_ohb`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `users`
@@ -60,10 +185,40 @@ ALTER TABLE `users`
 --
 
 --
+-- AUTO_INCREMENT for table `apar`
+--
+ALTER TABLE `apar`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `hydrant`
+--
+ALTER TABLE `hydrant`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `inspeksi_apar`
+--
+ALTER TABLE `inspeksi_apar`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `inspeksi_hydrant_ihb`
+--
+ALTER TABLE `inspeksi_hydrant_ihb`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `inspeksi_hydrant_ohb`
+--
+ALTER TABLE `inspeksi_hydrant_ohb`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
