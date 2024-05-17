@@ -1,5 +1,6 @@
 <?php
     include "koneksi.php";
+    date_default_timezone_set("Asia/Jakarta");
     header('Content-Type: application/json; charset=utf-8');
     http_response_code(406);
 
@@ -70,18 +71,36 @@
         $start_date = null;
         $end_date = null;
         $inspeksi = null;
+        $kadaluarsa = null;
+        $kerusakan = null;
         if(isset($_GET['read'])){
             if(isset($_GET['start_date'])) $start_date = $_GET['start_date'];
             if(isset($_GET['end_date'])) $end_date = $_GET['end_date'];
             if(isset($_GET['inspeksi'])) $inspeksi = $_GET['inspeksi'];
+            if(isset($_GET['kadaluarsa'])) $kadaluarsa = $_GET['kadaluarsa'];
+            if(isset($_GET['kerusakan'])) $kerusakan = $_GET['kerusakan'];
         }
-        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE created_at > '$start_date' AND created_at < '$end_date'");
+        //SELECT * FROM `inspeksi_apar` WHERE `kondisi_tabung` LIKE 'Baik' AND `tuas_pegangan` LIKE 'Baik'
+        //SELECT * FROM `apar` WHERE `tanggal_kadaluarsa` < '2024-05-16 00:00:00'
+        if($start_date!=null & $end_date != null){
+            $sqlll = "SELECT * FROM inspeksi_apar WHERE created_at > '$start_date' AND created_at < '$end_date'";
+            // if($kadaluarsa == "belum") $sqlll .= " AND `tanggal_kadaluarsa` < '".date("Y-m-d h:i:s")."'";
+            // if($kadaluarsa == "sudah") $sqlll .= " AND `tanggal_kadaluarsa` < '".date("Y-m-d h:i:s")."'";
+
+            if($kerusakan == "tidak") $sqlll .= " AND `tersedia` = 'Tersedia' AND `kondisi_tabung` = 'Baik' AND `segel_pin` = 'Terpasang' AND `tuas_pegangan` = 'Baik' AND `label_segitiga` = 'Tersedia' AND `label_instruksi` = 'Terbaca' AND `kondisi_selang` = 'Baik' AND `tekanan_tabung` = 'Tepat di hijau' AND `posisi` = 'Terlihat'";
+            if($kerusakan == "rusak") $sqlll .= " AND (`tersedia` != 'Tersedia' OR `kondisi_tabung` != 'Baik' OR `segel_pin` != 'Terpasang' OR `tuas_pegangan` != 'Baik' OR `label_segitiga` != 'Tersedia' OR `label_instruksi` != 'Terbaca' OR `kondisi_selang` != 'Baik' OR `tekanan_tabung` != 'Tepat di hijau' OR `posisi` != 'Terlihat')";
+
+
+            $result = mysqli_query($conn, $sqlll);
+        }
         else $result = mysqli_query($conn, "SELECT * FROM inspeksi_apar");
         $arr = 0;
         if($result){
             http_response_code(200);
             if($inspeksi == 'belum'){
-                $allApar = mysqli_query($conn, "SELECT * FROM apar");
+                if($kadaluarsa == "semua") $allApar = mysqli_query($conn, "SELECT * FROM apar");
+                if($kadaluarsa == "belum") $allApar = mysqli_query($conn, "SELECT * FROM apar  WHERE `tanggal_kadaluarsa` > '".date("Y-m-d h:i:s")."'");
+                if($kadaluarsa == "sudah") $allApar = mysqli_query($conn, "SELECT * FROM apar WHERE `tanggal_kadaluarsa` < '".date("Y-m-d h:i:s")."'");
                 while($data = mysqli_fetch_object($allApar)){
                     $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE apar_id = $data->id AND created_at > '$start_date' AND created_at < '$end_date'"));
                     if($data2 == null) $datas[$arr++] = $data;
@@ -89,11 +108,32 @@
             }
             else{
                 while($data = mysqli_fetch_object($result)){
-                        $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
-                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id"));
-                        $data->user = $resultUser;
-                        $data->apar = $resultApar;
-                        $datas[$arr++] = $data;
+                        if($kadaluarsa == "semua"){
+                            $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                            $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id"));
+                            $data->user = $resultUser;
+                            $data->apar = $resultApar;
+                            $datas[$arr++] = $data;
+                        }
+                        else if($kadaluarsa == "belum"){
+                            $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id  AND `tanggal_kadaluarsa` > '".date("Y-m-d h:i:s")."'"));
+                            if($resultApar){
+                                $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                                $data->user = $resultUser;
+                                $data->apar = $resultApar;
+                                $datas[$arr++] = $data;
+                            }
+                        }
+                        else if($kadaluarsa == "sudah"){
+                            $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $data->apar_id  AND `tanggal_kadaluarsa` < '".date("Y-m-d h:i:s")."'"));
+                            if($resultApar){
+                                $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                                $data->user = $resultUser;
+                                $data->apar = $resultApar;
+                                $datas[$arr++] = $data;
+                            }
+                        }
+
                 }
             }
             echo json_encode([
@@ -105,6 +145,7 @@
         }
         else{
             echo json_encode([
+                "SQL"=> $sqlll,
                 "status" => "failed",
                 "pesan" => "Read data inspeksi Failed",
             ]);

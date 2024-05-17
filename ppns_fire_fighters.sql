@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2024 at 11:27 AM
+-- Generation Time: May 17, 2024 at 06:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -29,6 +29,7 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `apar` (
   `id` int(255) NOT NULL,
+  `jenis_pemadam` varchar(255) NOT NULL,
   `nomor` varchar(255) NOT NULL,
   `lokasi` varchar(255) NOT NULL,
   `tanggal_kadaluarsa` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -46,7 +47,6 @@ CREATE TABLE `hydrant` (
   `nomor` varchar(255) NOT NULL,
   `lokasi` varchar(255) NOT NULL,
   `jenis_hydrant` varchar(5) NOT NULL DEFAULT 'ihb',
-  `tanggal_kadaluarsa` datetime NOT NULL DEFAULT current_timestamp(),
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
@@ -121,6 +121,21 @@ CREATE TABLE `inspeksi_hydrant_ohb` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `notification`
+--
+
+CREATE TABLE `notification` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` varchar(255) NOT NULL,
+  `displayed` tinyint(1) NOT NULL DEFAULT 0,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -138,7 +153,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `role`, `name`, `email`, `password`, `created_at`) VALUES
-(1, 1, 'admin', 'admin', '$2y$10$hysNWq1hUoO1UDQVclu0s.0cuCUWepq8xrq9/HgL.WleCd5JkfFvu', '2024-05-03 09:27:34');
+(1, 1, 'admin', 'admin', '$2y$10$hysNWq1hUoO1UDQVclu0s.0cuCUWepq8xrq9/HgL.WleCd5JkfFvu', '2024-05-17 04:17:41');
 
 --
 -- Indexes for dumped tables
@@ -172,6 +187,12 @@ ALTER TABLE `inspeksi_hydrant_ihb`
 -- Indexes for table `inspeksi_hydrant_ohb`
 --
 ALTER TABLE `inspeksi_hydrant_ohb`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `notification`
+--
+ALTER TABLE `notification`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -212,6 +233,12 @@ ALTER TABLE `inspeksi_hydrant_ihb`
 -- AUTO_INCREMENT for table `inspeksi_hydrant_ohb`
 --
 ALTER TABLE `inspeksi_hydrant_ohb`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `notification`
+--
+ALTER TABLE `notification`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
