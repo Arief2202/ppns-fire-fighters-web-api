@@ -42,7 +42,12 @@
     
     if(isset($_GET['read']) || isset($_POST['read'])){
         $datas=[];
-        $result = mysqli_query($conn, "SELECT * FROM apar");
+        $kadaluarsa = null;
+        if(isset($_GET['kadaluarsa'])) $kadaluarsa = $_GET['kadaluarsa'];
+        if(isset($_POST['kadaluarsa'])) $kadaluarsa = $_POST['kadaluarsa'];
+        if($kadaluarsa == 'sudah') $result = mysqli_query($conn, "SELECT * FROM apar WHERE `tanggal_kadaluarsa` < '".date("Y-m-d h:i:s")."'");
+        else if($kadaluarsa == 'belum') $result = mysqli_query($conn, "SELECT * FROM apar WHERE `tanggal_kadaluarsa` > '".date("Y-m-d h:i:s")."'");
+        else $result = mysqli_query($conn, "SELECT * FROM apar");
         if($result){
             http_response_code(200);
             $arr = 0;

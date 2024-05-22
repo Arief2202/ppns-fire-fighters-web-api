@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 17, 2024 at 06:17 AM
+-- Generation Time: May 22, 2024 at 07:19 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -149,13 +149,6 @@ CREATE TABLE `users` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
--- Dumping data for table `users`
---
-
-INSERT INTO `users` (`id`, `role`, `name`, `email`, `password`, `created_at`) VALUES
-(1, 1, 'admin', 'admin', '$2y$10$hysNWq1hUoO1UDQVclu0s.0cuCUWepq8xrq9/HgL.WleCd5JkfFvu', '2024-05-17 04:17:41');
-
---
 -- Indexes for dumped tables
 --
 
@@ -245,7 +238,7 @@ ALTER TABLE `notification`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

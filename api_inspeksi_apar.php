@@ -46,6 +46,24 @@
             $tekanan_tabung = $_POST['tekanan_tabung'];
             $posisi = $_POST['posisi'];
         }
+        
+        if( $tersedia != 'Tersedia' || 
+            $kondisi_tabung != 'Baik' || 
+            $segel_pin != 'Terpasang' || 
+            $tuas_pegangan != 'Baik' || 
+            $label_segitiga != 'Tersedia' || 
+            $label_instruksi != 'Terbaca' || 
+            $kondisi_selang != 'Baik' || 
+            $tekanan_tabung != 'Tepat di hijau' || 
+            $posisi != 'Terlihat'
+        ){
+            $users = mysqli_query($conn, "SELECT * FROM users where role = 1");
+            while($userAdmin = mysqli_fetch_object($users)){
+                $apar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM apar WHERE id = $apar_id"));
+                mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'APAR Rusak Terinspeksi', 'Telah terdeteksi APAR rusak dengan Nomor : $apar->nomor', '0', current_timestamp());");
+            }
+        }
+
         $sql = "INSERT INTO `inspeksi_apar` (`id`, `user_id`, `apar_id`, `tersedia`, `alasan`, `kondisi_tabung`, `segel_pin`, `tuas_pegangan`, `label_segitiga`, `label_instruksi`, `kondisi_selang`, `tekanan_tabung`, `posisi`, `created_at`) VALUES (NULL, '$user_id', '$apar_id', '$tersedia', '$alasan', '$kondisi_tabung', '$segel_pin', '$tuas_pegangan', '$label_segitiga', '$label_instruksi', '$kondisi_selang', '$tekanan_tabung', '$posisi', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){

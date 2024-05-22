@@ -48,6 +48,23 @@
             $flushing_hydrant = $_POST['flushing_hydrant'];
             $tekanan_hydrant = $_POST['tekanan_hydrant'];
         }
+
+        if( $kondisi_kotak != 'Bersih' || 
+            $posisi_kotak != 'Tidak Terhalang' || 
+            $kondisi_nozzle != 'Baik' || 
+            $kondisi_selang != 'Baik' || 
+            $kondisi_coupling != 'Baik' || 
+            $tuas_pembuka != 'Tersedia' ||
+            $kondisi_outlet != 'Baik' || 
+            $penutup_cop != 'Baik'
+        ){
+            $users = mysqli_query($conn, "SELECT * FROM users where role = 1");
+            while($userAdmin = mysqli_fetch_object($users)){
+                $hydrant = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE id = $hydrant_id"));
+                mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'Hydrant OHB Rusak Terinspeksi', 'Telah terdeteksi Hydrant OHB rusak dengan Nomor : $hydrant->nomor', '0', current_timestamp());");
+            }
+        }
+
         $sql = "INSERT INTO `inspeksi_hydrant_ohb` (`id`, `user_id`, `hydrant_id`, `kondisi_kotak`, `posisi_kotak`, `kondisi_nozzle`, `kondisi_selang`, `jenis_selang`, `kondisi_coupling`, `tuas_pembuka`, `kondisi_outlet`, `penutup_cop`, `flushing_hydrant`, `tekanan_hydrant`,  `created_at`) VALUES (NULL, '$user_id', '$hydrant_id', '$kondisi_kotak', '$posisi_kotak', '$kondisi_nozzle', '$kondisi_selang', '$jenis_selang', '$kondisi_coupling', '$tuas_pembuka', '$kondisi_outlet', '$penutup_cop', '$flushing_hydrant', '$tekanan_hydrant', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){
@@ -73,12 +90,22 @@
         $start_date = null;
         $end_date = null;
         $inspeksi = null;
+        $kerusakan = null;
         if(isset($_GET['read'])){
             if(isset($_GET['start_date'])) $start_date = $_GET['start_date'];
             if(isset($_GET['end_date'])) $end_date = $_GET['end_date'];
             if(isset($_GET['inspeksi'])) $inspeksi = $_GET['inspeksi'];
+            if(isset($_GET['kerusakan'])) $kerusakan = $_GET['kerusakan'];
         }
-        if($start_date!=null & $end_date != null) $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ohb WHERE created_at > '$start_date' AND created_at < '$end_date'");
+        
+        if($start_date!=null & $end_date != null){            
+            $sqlll = "SELECT * FROM inspeksi_hydrant_ohb WHERE created_at > '$start_date' AND created_at < '$end_date'";
+            
+            if($kerusakan == "tidak") $sqlll .= " AND `kondisi_kotak` = 'Bersih' AND `posisi_kotak` = 'Tidak Terhalang' AND `kondisi_nozzle` = 'Baik' AND `kondisi_selang` = 'Baik' AND `kondisi_coupling` = 'Baik' AND `tuas_pembuka` = 'Tersedia' AND `kondisi_outlet` = 'Baik' AND `penutup_cop` = 'Baik'";
+            if($kerusakan == "rusak") $sqlll .= " AND (`kondisi_kotak` != 'Bersih' OR `posisi_kotak` != 'Tidak Terhalang' OR `kondisi_nozzle` != 'Baik' OR `kondisi_selang` != 'Baik' OR `kondisi_coupling` != 'Baik' OR `tuas_pembuka` != 'Tersedia' OR `kondisi_outlet` != 'Baik' OR `penutup_cop` != 'Baik')";
+
+            $result = mysqli_query($conn,$sqlll);
+        }
         else $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ohb");
         $arr = 0;
         if($result){
