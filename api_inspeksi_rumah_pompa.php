@@ -141,9 +141,8 @@
             }
         }
 
-        $sql = "INSERT INTO `inspeksi_hydrant_ihb` (`id`, `user_id`, `lokasi`, `kondisi`, `ventilasi`, `katup_hisap`, `perpipaan`, `pengukur_hisap`, `pengukur_sistem`, `tangki_hisap`, `saringan_hisap`, `katup_uji`, `lampu_pengontrol`, `lampu_saklar`, `saklar_isolasi`, `lampu_rotasi`, `level_oli_motor`, `pompa_pemeliharaan`, `tangki_bahan_bakar`, `saklar_pemilih`, `pembacaan_tegangan`, `pembacaan_arus`, `lampu_baterai`, `semua_lampu_alarm`, `pengukur_waktu`, `ketinggian_oli`, `level_oli_mesin`, `ketinggian_air`, `tingkat_elektrolit`, `terminal_baterai`, `pemanas_jaket`, `kondisi_uap`, `created_at`) VALUES (NULL, '$user_id', '$lokasi', '$kondisi', '$ventilasi', '$katup_hisap', '$perpipaan', '$pengukur_hisap', '$pengukur_sistem', '$tangki_hisap', '$saringan_hisap', '$katup_uji', '$lampu_pengontrol', '$lampu_saklar', '$saklar_isolasi', '$lampu_rotasi', '$level_oli_motor', '$pompa_pemeliharaan', '$tangki_bahan_bakar', '$saklar_pemilih', '$pembacaan_tegangan', '$pembacaan_arus', '$lampu_baterai', '$semua_lampu_alarm', '$pengukur_waktu', '$ketinggian_oli', '$level_oli_mesin', '$ketinggian_air', '$tingkat_elektrolit', '$terminal_baterai', '$pemanas_jaket', '$kondisi_uap', current_timestamp());";
+        $sql = "INSERT INTO `inspeksi_rumah_pompa` (`id`, `user_id`, `lokasi`, `kondisi`, `ventilasi`, `katup_hisap`, `perpipaan`, `pengukur_hisap`, `pengukur_sistem`, `tangki_hisap`, `saringan_hisap`, `katup_uji`, `lampu_pengontrol`, `lampu_saklar`, `saklar_isolasi`, `lampu_rotasi`, `level_oli_motor`, `pompa_pemeliharaan`, `tangki_bahan_bakar`, `saklar_pemilih`, `pembacaan_tegangan`, `pembacaan_arus`, `lampu_baterai`, `semua_lampu_alarm`, `pengukur_waktu`, `ketinggian_oli`, `level_oli_mesin`, `ketinggian_air`, `tingkat_elektrolit`, `terminal_baterai`, `pemanas_jaket`, `kondisi_uap`, `created_at`) VALUES (NULL, '$user_id', '$lokasi', '$kondisi', '$ventilasi', '$katup_hisap', '$perpipaan', '$pengukur_hisap', '$pengukur_sistem', '$tangki_hisap', '$saringan_hisap', '$katup_uji', '$lampu_pengontrol', '$lampu_saklar', '$saklar_isolasi', '$lampu_rotasi', '$level_oli_motor', '$pompa_pemeliharaan', '$tangki_bahan_bakar', '$saklar_pemilih', '$pembacaan_tegangan', '$pembacaan_arus', '$lampu_baterai', '$semua_lampu_alarm', '$pengukur_waktu', '$ketinggian_oli', '$level_oli_mesin', '$ketinggian_air', '$tingkat_elektrolit', '$terminal_baterai', '$pemanas_jaket', '$kondisi_uap', current_timestamp());";
 
-        var_dump($sql);die;
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
@@ -151,13 +150,13 @@
             echo json_encode([
                 "status" => "success",
                 // "data" => $data,
-                "pesan" => "Data Inspeksi Hydrant IHB Berhasil Ditambahkan",
+                "pesan" => "Data Inspeksi Rumah Pompa Berhasil Ditambahkan",
             ]);
         }
         else{
             echo json_encode([
                 "status" => "failed",
-                "pesan" => "Data Inspeksi Hydrant IHB Gagal Ditambahkan",
+                "pesan" => "Data Inspeksi Rumah Pompa Gagal Ditambahkan",
             ]);
         }
     }
@@ -176,32 +175,20 @@
             if(isset($_GET['kerusakan'])) $kerusakan = $_GET['kerusakan'];
         }
         if($start_date!=null & $end_date != null){            
-            $sqlll = "SELECT * FROM inspeksi_hydrant_ihb WHERE created_at > '$start_date' AND created_at < '$end_date'";
+            $sqlll = "SELECT * FROM inspeksi_rumah_pompa WHERE created_at > '$start_date' AND created_at < '$end_date'";
             
-            if($kerusakan == "tidak") $sqlll .= " AND `kondisi_kotak` = 'Bersih' AND `posisi_kotak` = 'Tidak Terhalang' AND `kondisi_nozzle` = 'Baik' AND `kondisi_selang` = 'Baik' AND `kondisi_coupling` = 'Baik' AND `kondisi_landing_valve` = 'Baik' AND `kondisi_tray` = 'Baik'";
-            if($kerusakan == "rusak") $sqlll .= " AND (`kondisi_kotak` != 'Bersih' OR `posisi_kotak` != 'Tidak Terhalang' OR `kondisi_nozzle` != 'Baik' OR `kondisi_selang` != 'Baik' OR `kondisi_coupling` != 'Baik' OR `kondisi_landing_valve` != 'Baik' OR `kondisi_tray` != 'Baik')";
+            if($kerusakan == "tidak") $sqlll .= " AND `kondisi` = 'Aman' AND `ventilasi` = 'Aman' AND `katup_hisap` = 'Aman' AND `perpipaan` = 'Aman' AND `pengukur_hisap` = 'Aman' AND `pengukur_sistem` = 'Aman' AND `tangki_hisap` = 'Aman' AND `saringan_hisap` = 'Aman' AND `katup_uji` = 'Aman' AND `lampu_pengontrol` = 'Aman' AND `lampu_saklar` = 'Aman' AND `saklar_isolasi` = 'Aman' AND `lampu_rotasi` = 'Aman' AND `level_oli_motor` = 'Aman' AND `pompa_pemeliharaan` = 'Aman' AND `tangki_bahan_bakar` = 'Aman' AND `saklar_pemilih` = 'Aman' AND `pembacaan_tegangan` = 'Aman' AND `pembacaan_arus` = 'Aman' AND `lampu_baterai` = 'Aman' AND `semua_lampu_alarm` = 'Aman' AND `pengukur_waktu` = 'Aman' AND `ketinggian_oli` = 'Aman' AND `level_oli_mesin` = 'Aman' AND `ketinggian_air` = 'Aman' AND `tingkat_elektrolit` = 'Aman' AND `terminal_baterai` = 'Aman' AND `pemanas_jaket` = 'Aman' AND `kondisi_uap` = 'Aman'";
+            if($kerusakan == "rusak") $sqlll .= " AND (`kondisi` != 'Aman' OR `ventilasi` != 'Aman' OR `katup_hisap` != 'Aman' OR `perpipaan` != 'Aman' OR `pengukur_hisap` != 'Aman' OR `pengukur_sistem` != 'Aman' OR `tangki_hisap` != 'Aman' OR `saringan_hisap` != 'Aman' OR `katup_uji` != 'Aman' OR `lampu_pengontrol` != 'Aman' OR `lampu_saklar` != 'Aman' OR `saklar_isolasi` != 'Aman' OR `lampu_rotasi` != 'Aman' OR `level_oli_motor` != 'Aman' OR `pompa_pemeliharaan` != 'Aman' OR `tangki_bahan_bakar` != 'Aman' OR `saklar_pemilih` != 'Aman' OR `pembacaan_tegangan` != 'Aman' OR `pembacaan_arus` != 'Aman' OR `lampu_baterai` != 'Aman' OR `semua_lampu_alarm` != 'Aman' OR `pengukur_waktu` != 'Aman' OR `ketinggian_oli` != 'Aman' OR `level_oli_mesin` != 'Aman' OR `ketinggian_air` != 'Aman' OR `tingkat_elektrolit` != 'Aman' OR `terminal_baterai` != 'Aman' OR `pemanas_jaket` != 'Aman' OR `kondisi_uap` != 'Aman' OR )";
 
             $result = mysqli_query($conn,$sqlll);
         }
-        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ihb");
+        else $result = mysqli_query($conn, "SELECT * FROM inspeksi_rumah_pompa");
         $arr = 0;
         if($result){
             http_response_code(200);
-            if($inspeksi == 'belum'){
-                $allHydrant = mysqli_query($conn, "SELECT * FROM hydrant WHERE jenis_hydrant = 'ihb'");
-                while($data = mysqli_fetch_object($allHydrant)){
-                    $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_hydrant_ihb WHERE hydrant_id = $data->id AND created_at > '$start_date' AND created_at < '$end_date'"));
-                    if($data2 == null) $datas[$arr++] = $data;
-                }
-            }
-            else{
                 while($data = mysqli_fetch_object($result)){
-                        $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
-                        $resultApar = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE id = $data->hydrant_id"));
-                        $data->user = $resultUser;
-                        $data->hydrant = $resultApar;
-                        $datas[$arr++] = $data;
-                }
+                $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                $datas[$arr++] = $data;
             }
             echo json_encode([
                 "status" => "success",
