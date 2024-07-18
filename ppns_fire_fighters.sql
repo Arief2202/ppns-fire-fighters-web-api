@@ -118,6 +118,42 @@ CREATE TABLE `inspeksi_hydrant_ohb` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
+CREATE TABLE `inspeksi_rumah_pompa` (
+  `id` int(255) NOT NULL,
+  `user_id` int(255) NOT NULL,
+  `lokasi` varchar(255) NOT NULL,
+  `kondisi` varchar(255) NOT NULL,
+  `ventilasi` varchar(255) NOT NULL,
+  `katup_hisap` varchar(255) NOT NULL,
+  `perpipaan` varchar(255) NOT NULL,
+  `pengukur_hisap` varchar(255) NOT NULL,
+  `pengukur_sistem` varchar(255) NOT NULL,
+  `tangki_hisap` varchar(255) NOT NULL,
+  `saringan_hisap` varchar(255) NOT NULL,
+  `katup_uji` varchar(255) NOT NULL,
+  `lampu_pengontrol` varchar(255) NOT NULL,
+  `lampu_saklar` varchar(255) NOT NULL,
+  `saklar_isolasi` varchar(255) NOT NULL,
+  `lampu_rotasi` varchar(255) NOT NULL,
+  `level_oli_motor` varchar(255) NOT NULL,
+  `pompa_pemeliharaan` varchar(255) NOT NULL,
+  `tangki_bahan_bakar` varchar(255) NOT NULL,
+  `saklar_pemilih` varchar(255) NOT NULL,
+  `pembacaan_tegangan` varchar(255) NOT NULL,
+  `pembacaan_arus` varchar(255) NOT NULL,
+  `lampu_baterai` varchar(255) NOT NULL,
+  `semua_lampu_alarm` varchar(255) NOT NULL,
+  `pengukur_waktu` varchar(255) NOT NULL,
+  `ketinggian_oli` varchar(255) NOT NULL,
+  `level_oli_mesin` varchar(255) NOT NULL,
+  `ketinggian_air` varchar(255) NOT NULL,
+  `tingkat_elektrolit` varchar(255) NOT NULL,
+  `terminal_baterai` varchar(255) NOT NULL,
+  `pemanas_jaket` varchar(255) NOT NULL,
+  `kondisi_uap` varchar(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
 -- --------------------------------------------------------
 
 --
@@ -194,6 +230,13 @@ ALTER TABLE `notification`
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
+  
+--
+-- Indexes for table `inspeksi_rumah_pompa`
+--
+ALTER TABLE `inspeksi_rumah_pompa`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -238,6 +281,13 @@ ALTER TABLE `notification`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+COMMIT;
+
+--
+-- AUTO_INCREMENT for table `inspeksi_rumah_pompa`
+--
+ALTER TABLE `inspeksi_rumah_pompa`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 COMMIT;
 
