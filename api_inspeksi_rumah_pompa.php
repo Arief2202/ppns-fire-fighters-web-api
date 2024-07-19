@@ -135,19 +135,16 @@
         ){
             $users = mysqli_query($conn, "SELECT * FROM users where role = 1");
             while($userAdmin = mysqli_fetch_object($users)){
-                mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'Rumah Pompa Hydrant Rusak Terinspeksi', 'Telah terdeteksi Rumah Pompa Rusak', '0', current_timestamp());");
+                mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `created_at`) VALUES (NULL, '$userAdmin->id', 'Rumah Pompa Hydrant Rusak Terinspeksi', 'Telah terdeteksi Rumah Pompa Rusak', '0', current_timestamp());");
             }
         }
 
         $sql = "INSERT INTO `inspeksi_rumah_pompa` (`id`, `user_id`, `lokasi`, `kondisi`, `ventilasi`, `katup_hisap`, `perpipaan`, `pengukur_hisap`, `pengukur_sistem`, `tangki_hisap`, `saringan_hisap`, `katup_uji`, `lampu_pengontrol`, `lampu_saklar`, `saklar_isolasi`, `lampu_rotasi`, `level_oli_motor`, `pompa_pemeliharaan`, `tangki_bahan_bakar`, `saklar_pemilih`, `pembacaan_tegangan`, `pembacaan_arus`, `lampu_baterai`, `semua_lampu_alarm`, `pengukur_waktu`, `ketinggian_oli`, `level_oli_mesin`, `ketinggian_air`, `tingkat_elektrolit`, `terminal_baterai`, `pemanas_jaket`, `kondisi_uap`, `timestamp`) VALUES (NULL, $user_id, '$lokasi', '$kondisi', '$ventilasi', '$katup_hisap', '$perpipaan', '$pengukur_hisap', '$pengukur_sistem', '$tangki_hisap', '$saringan_hisap', '$katup_uji', '$lampu_pengontrol', '$lampu_saklar', '$saklar_isolasi', '$lampu_rotasi', '$level_oli_motor', '$pompa_pemeliharaan', '$tangki_bahan_bakar', '$saklar_pemilih', '$pembacaan_tegangan', '$pembacaan_arus', '$lampu_baterai', '$semua_lampu_alarm', '$pengukur_waktu', '$ketinggian_oli', '$level_oli_mesin', '$ketinggian_air', '$tingkat_elektrolit', '$terminal_baterai', '$pemanas_jaket', '$kondisi_uap', current_timestamp());";
-        // $sql = "INSERT INTO `inspeksi_rumah_pompa` (`id`, `user_id`, `lokasi`, `kondisi`, `ventilasi`, `katup_hisap`, `perpipaan`, `pengukur_hisap`, `pengukur_sistem`, `tangki_hisap`, `saringan_hisap`, `katup_uji`, `lampu_pengontrol`, `lampu_saklar`, `saklar_isolasi`, `lampu_rotasi`, `level_oli_motor`, `pompa_pemeliharaan`, `tangki_bahan_bakar`, `saklar_pemilih`, `pembacaan_tegangan`, `pembacaan_arus`, `lampu_baterai`, `semua_lampu_alarm`, `pengukur_waktu`, `ketinggian_oli`, `level_oli_mesin`, `ketinggian_air`, `tingkat_elektrolit`, `terminal_baterai`, `pemanas_jaket`, `kondisi_uap`, `timestamp`) VALUES (NULL, '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', '1', current_timestamp());"
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
-            // $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_apar WHERE nomor = '".$nomor."'"));
             echo json_encode([
                 "status" => "success",
-                // "data" => $data,
                 "pesan" => "Data Inspeksi Rumah Pompa Berhasil Ditambahkan",
             ]);
         }
@@ -186,6 +183,7 @@
             http_response_code(200);
                 while($data = mysqli_fetch_object($result)){
                 $resultUser = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data->user_id"));
+                $data->user = $resultUser;
                 $datas[$arr++] = $data;
             }
             echo json_encode([
