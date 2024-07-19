@@ -134,11 +134,8 @@
             $kondisi_uap != 'Aman'
         ){
             $users = mysqli_query($conn, "SELECT * FROM users where role = 1");
-            var_dump($users);die;
             while($userAdmin = mysqli_fetch_object($users)){
-                $hydrant = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM hydrant WHERE id = $hydrant_id"));
-                mysqli_query($conn, "INSERT INTO `notification` 
-                (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'Rumah Pompa Hydrant Rusak Terinspeksi', 'Telah terdeteksi Rumah Pompa Rusak', '0', current_timestamp());");
+                mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'Rumah Pompa Hydrant Rusak Terinspeksi', 'Telah terdeteksi Rumah Pompa Rusak', '0', current_timestamp());");
             }
         }
 
