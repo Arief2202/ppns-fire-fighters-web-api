@@ -200,3 +200,28 @@
             ]);
         }
     }
+
+    if(isset($_GET['search']) || isset($_POST['search'])){
+        $data2 = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM inspeksi_rumah_pompa WHERE created_at > '".date("Y-m")."-01 00:00:00' AND created_at < '".date("Y-m")."-31 23:59:59'"));
+        if($data2){
+            $user = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM users WHERE id = $data2->user_id"));
+            http_response_code(200);
+            echo json_encode([
+                "status" => "success",
+                "inspection" => false,
+                "pesan" => "Search data Successed!",
+                "data_inspeksi" => $data2,
+                "data_user" => $user,
+            ]);die;
+        }
+        else{
+            http_response_code(200);
+            echo json_encode([
+                "status" => "success",
+                "inspection" => true,
+                "pesan" => "Search data Successed!",
+                "data" => $data,
+            ]);die;
+        }
+    
+    }
