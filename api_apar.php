@@ -9,12 +9,14 @@
         $lokasi;
         $kadaluarsa;
         $berat;
+        $rating;
         if(isset($_GET['create'])){
             $jenis_pemadam = $_GET['jenis_pemadam'];
             $nomor = $_GET['nomor'];
             $lokasi = $_GET['lokasi'];
             $kadaluarsa = $_GET['kadaluarsa'];
             $berat = $_GET['berat'];
+            $rating = $_GET['rating'];
         }
         else if(isset($_POST['create'])){
             $jenis_pemadam = $_POST['jenis_pemadam'];
@@ -22,9 +24,10 @@
             $lokasi = $_POST['lokasi'];
             $kadaluarsa = $_POST['kadaluarsa'];
             $berat = $_POST['berat'];
+            $rating = $_POST['rating'];
         }
         //2024-03-31 00:00:00 
-        $sql = "INSERT INTO `apar` (`id`, `jenis_pemadam`, `nomor`, `lokasi`, `berat`, `tanggal_kadaluarsa`, `timestamp`) VALUES (NULL, '".$jenis_pemadam."', '".$nomor."', '".$lokasi."', '".$berat."', '".$kadaluarsa."', current_timestamp());";
+        $sql = "INSERT INTO `apar` (`id`, `jenis_pemadam`, `nomor`, `lokasi`, `berat`, `rating`, `tanggal_kadaluarsa`, `timestamp`) VALUES (NULL, '".$jenis_pemadam."', '".$nomor."', '".$lokasi."', '".$berat."', '".$rating."', '".$kadaluarsa."', current_timestamp());";
         $result = mysqli_query($conn, $sql);
         if($result){
             http_response_code(200);
@@ -128,13 +131,15 @@
         $nomor = null;
         $lokasi = null;
         $kadaluarsa = null;
-        $berat;
+        $berat = null;
+        $rating = null;
         if(isset($_GET['update'])){
             if(isset($_GET['jenis_pemadam'])) $jenis_pemadam = $_GET['jenis_pemadam'];
             if(isset($_GET['id'])) $id = $_GET['id'];
             if(isset($_GET['nomor'])) $nomor = $_GET['nomor'];
             if(isset($_GET['lokasi'])) $lokasi = $_GET['lokasi'];   
             if(isset($_GET['berat'])) $berat = $_GET['berat'];   
+            if(isset($_GET['rating'])) $rating = $_GET['rating'];   
             if(isset($_GET['kadaluarsa'])) $kadaluarsa = $_GET['kadaluarsa'];
         }
         else if(isset($_POST['update'])){
@@ -143,6 +148,7 @@
             if(isset($_POST['nomor'])) $nomor = $_POST['nomor'];
             if(isset($_POST['lokasi'])) $lokasi = $_POST['lokasi'];
             if(isset($_POST['berat'])) $berat = $_POST['berat'];
+            if(isset($_POST['rating'])) $rating = $_POST['rating'];
             if(isset($_POST['kadaluarsa'])) $kadaluarsa = $_POST['kadaluarsa'];
         }
         $data = mysqli_fetch_object(mysqli_query($conn, "SELECT * FROM `apar` WHERE id = ".$id));
@@ -151,10 +157,11 @@
             if($nomor != null) $data->nomor = $nomor;
             if($lokasi != null) $data->lokasi = $lokasi;
             if($berat != null) $data->berat = $berat;
+            if($rating != null) $data->rating = $rating;
             if($kadaluarsa != null) $data->tanggal_kadaluarsa = $kadaluarsa;
             
             //2024-03-31 00:00:00 
-            $sql = "UPDATE `apar` SET `jenis_pemadam` = '".$data->jenis_pemadam."', `nomor` = '".$data->nomor."', `lokasi` = '".$data->lokasi."', `berat` = '".$data->berat."', `tanggal_kadaluarsa` = '".$data->tanggal_kadaluarsa."' WHERE `apar`.`id` = ".$id.";";
+            $sql = "UPDATE `apar` SET `jenis_pemadam` = '".$data->jenis_pemadam."', `nomor` = '".$data->nomor."', `lokasi` = '".$data->lokasi."', `berat` = '".$data->berat."', `rating` = '".$data->rating."', `tanggal_kadaluarsa` = '".$data->tanggal_kadaluarsa."' WHERE `apar`.`id` = ".$id.";";
             $result = mysqli_query($conn, $sql);
             if($result){
                 http_response_code(200);
