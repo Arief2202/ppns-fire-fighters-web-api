@@ -78,8 +78,21 @@
             if($abs_diff <= 30){
                 $users = mysqli_query($conn, "SELECT * FROM users where role = 1");
                 while($userAdmin = mysqli_fetch_object($users)){
-                    if($abs_diff > 0) mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'APAR Hampir Kadaluarsa', 'APAR hampir kadaluarsa terdeteksi, Nomor Apar : $apar->nomor', '0', current_timestamp());");
+                    if($abs_diff > 0) mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'APAR Hampir Kadaluarsa', 'APAR hampir kadaluarsa terdeteksi, Tersisa $abs_diff Hari lagi, Nomor Apar : $apar->nomor', '0', current_timestamp());");
                     else mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$userAdmin->id', 'APAR Kadaluarsa', 'APAR kadaluarsa terdeteksi, Nomor Apar : $apar->nomor', '0', current_timestamp());");
+                }
+            }
+        }
+    }
+    if(isset($_GET['check_reminder_inspeksi']) || isset($_POST['check_reminder_inspeksi'])){
+        http_response_code(200);
+        if(isset($_GET['user_id']) || isset($_POST['user_id'])){
+            $user_id = null;
+            if(isset($_GET['user_id'])) $user_id = $_GET['user_id'];
+            if(isset($_POST['user_id'])) $user_id = $_POST['user_id'];
+            if($user_id){
+                if(((int) date('d')) < 10){            
+                    mysqli_query($conn, "INSERT INTO `notification` (`id`, `user_id`, `title`, `content`, `displayed`, `timestamp`) VALUES (NULL, '$user_id', 'Reminder Inspeksi', 'Harap Lakukan inspeksi APAR & HYDRANT sebelum tanggal 10', '0', current_timestamp());");
                 }
             }
         }
